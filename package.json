@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node ./out/index.js",
     "build": "tsc -p",
-    "dev": "nodemon ./src/index.ts"
+    "dev": "nodemon ./src/index.ts",
+    "books":"nodemon ./src/books.ts"
+  
   },
   "dependencies": {
     "@types/cors": "^2.8.12",
