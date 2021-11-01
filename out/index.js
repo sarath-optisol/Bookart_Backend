@@ -22,12 +22,30 @@ app.post("/register", (req, res) => {
         user_1.default.create({
             username: username,
             password: hash,
+        }).catch((err) => {
+            if (err) {
+                console.log(err);
+            }
         });
     })
-        .then(() => res.json("USER REGISTERED"))
-        .catch((err) => {
-        if (err) {
-            res.status(400).json({ error: err });
+        .then(() => res.json("USER REGISTERED"));
+});
+app.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+    const user = await user_1.default.findOne({ where: { username: username } });
+    if (!user) {
+        res.status(400).json({ error: "user dosent exist" });
+    }
+    const pwd = (user) => {
+        return user.password;
+    };
+    const dbpass = pwd(user);
+    bcrypt.compare(password, dbpass).then((match) => {
+        if (!match) {
+            res.status(400).json("Wrong pass");
+        }
+        else {
+            res.json("LOGGED IN");
         }
     });
 });
