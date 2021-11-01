@@ -1,17 +1,29 @@
-import {Sequelize,STRING} from "sequelize";
-const sequelize=new Sequelize('bookart','root','',{host:'localhost',dialect:'mariadb'});
+import {Sequelize,DataTypes, useInflection} from "sequelize";
+import {Model} from "sequelize"
+import db from "../database/Connection";
 
-module.exports = (sequelize:Sequelize, DataTypes:any) => {
-    const Users = sequelize.define("Users", {
-      username: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-    });
-    return Users;
-  };
+interface User {
+  username:string,
+  password:string
+}
+export default class UserInstance extends Model<User>{}
+
+
+
+UserInstance.init({
+  username:{
+    allowNull:false,
+    unique:true,
+    type:DataTypes.STRING,
+  },
+  password:{
+    allowNull:false,
+    type:DataTypes.STRING
+  }
+
+},
+{
+  sequelize:db,
+  tableName:"user"
+})
+

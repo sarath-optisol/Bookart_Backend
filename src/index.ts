@@ -2,16 +2,24 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const app = express();
 const cookieParser = require("cookie-parser");
-const db = require("./models/index");
-const {Users} = require("./models/user");
+import  UserInstance  from "./models/user";
+import db from  "./database/Connection";
 app.use(express.json());
 app.use(cookieParser())
+
+app.listen(3001, () => {
+  console.log("running");
+});
+
+
+
+
 app.post("/register", (req:any, res:any) => {
   const { username, password } = req.body;
   bcrypt
     .hash(password, 10)
     .then((hash:any) => {
-      Users.create({
+      UserInstance.create({
         username: username,
         password: hash,
       });
@@ -24,8 +32,6 @@ app.post("/register", (req:any, res:any) => {
     });
 });
 
-db.sequelize.sync().then(() => {
-  app.listen(3001, () => {
-    console.log("running");
-  });
+db.sync().then(() => {
+     console.log("DB Connected")
 });
