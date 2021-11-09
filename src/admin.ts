@@ -20,12 +20,20 @@ app.post("/admin", async (req: any, res: any) => {
   };
   const dbpass = pass(admin);
   if (dbpass === password) {
+    const accessTokens = createtokens(admin);
+    res.cookie("access-token", accessTokens, {
+      maxAge: 86400000,
+      httpOnly: true,
+    });
     res.json("Admin authenticated");
   } else {
-    res.status(400).json("wrong pass");
+    res.status(400).json({ err: "wrong pass" });
   }
 });
 
+app.get("/admin_profile", validateTokens, (req: any, res: any) => {
+  res.json("Admin profile view");
+});
 db.sync().then(() => {
   console.log("DB Connected");
 });

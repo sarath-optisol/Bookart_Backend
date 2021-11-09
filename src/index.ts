@@ -4,6 +4,7 @@ const app = express();
 const cookieParser = require("cookie-parser");
 import UserInstance from "./models/user";
 import db from "./database/Connection";
+import { check, validationResult } from "express-validator";
 const { validateTokens } = require("./jwt");
 const { createtokens } = require("./jwt");
 app.use(express.json());
@@ -12,23 +13,46 @@ app.listen(3001, () => {
   console.log("running");
 });
 
-app.post("/register", (req: any, res: any) => {
-  const { username, password } = req.body;
-  bcrypt
-    .hash(password, 10)
-    .then((hash: any) => {
-      UserInstance.create({
-        username: username,
-        password: hash,
-      }).catch((err) => {
-        if (err) {
-          console.log(err);
-        }
-      });
-    })
+app.post(
+  "/register",
+  check("email", "email required").isEmail(),
+  check("password", "Password Required").notEmpty(),
+  async (req: any, res: any) => {
+    const { username, password, email } = req.body;
 
-    .then(() => res.json("USER REGISTERED"));
-});
+    const validationresult = validationResult(req);
+    if (!validationresult.isEmpty()) {
+      res.status(400).json(validationresult.array());
+    }
+    try {
+      const emailcheck = await UserInstance.findAll({
+        where: { email: email },
+        raw: true,
+      });
+      if (emailcheck.length >= 0) {
+        res.status(400).json({ err: "Email already exist" });
+      }
+
+      bcrypt
+        .hash(password, 10)
+        .then((hash: any) => {
+          UserInstance.create({
+            username: username,
+            password: hash,
+            email: email,
+          }).catch((err) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+        })
+
+        .then(() => res.json("USER REGISTERED"));
+    } catch (err) {
+      return res.json({ error: err });
+    }
+  }
+);
 
 app.post("/login", async (req: any, res: any) => {
   const { username, password } = req.body;

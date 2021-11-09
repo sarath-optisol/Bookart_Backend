@@ -5,6 +5,9 @@ import db from "../database/Connection";
 interface User {
   username: string;
   password: string;
+  email: string;
+  address?: string;
+  mobile?: string;
 }
 export default class UserInstance extends Model<User> {}
 
@@ -18,6 +21,17 @@ UserInstance.init(
     password: {
       allowNull: false,
       type: DataTypes.STRING,
+    },
+    email: {
+      allowNull: false,
+      type: DataTypes.STRING,
+      unique: true,
+    },
+    address: {
+      type: DataTypes.STRING,
+    },
+    mobile: {
+      type: DataTypes.INTEGER,
     },
   },
   {
