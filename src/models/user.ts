@@ -6,6 +6,7 @@ interface User {
   username: string;
   password: string;
   email: string;
+  confirmed: Boolean;
   address?: string;
   mobile?: string;
 }
@@ -26,6 +27,10 @@ UserInstance.init(
       allowNull: false,
       type: DataTypes.STRING,
       unique: true,
+    },
+    confirmed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
     address: {
       type: DataTypes.STRING,
