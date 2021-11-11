@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const app = express();
-import jt from "jsonwebtoken";
+import jt, { JwtPayload } from "jsonwebtoken";
 const cookieParser = require("cookie-parser");
 import { createTransport, Transport, Transporter } from "nodemailer";
 import UserInstance from "./models/user";
@@ -15,6 +15,11 @@ app.use(cookieParser());
 app.listen(3001, () => {
   console.log("running");
 });
+interface TokenInterface {
+  user: string;
+  iat: Number;
+  exp: Number;
+}
 const transporter = createTransport({
   service: "FastMail",
 
@@ -39,6 +44,12 @@ app.post(
         where: { email: email },
         raw: true,
       });
+      const usernameCheck = await UserInstance.findAll({
+        where: { username: username },
+      });
+      if (usernameCheck.length > 0) {
+        res.status(400).json({ err: "username already exist" });
+      }
       if (emailcheck.length > 0) {
         res.status(400).json({ err: "Email already exist" });
       }
@@ -48,21 +59,22 @@ app.post(
           username: username,
           password: hash,
           email: email,
-          confirmed: true,
+          confirmed: false,
         }).catch((err) => {
           if (err) {
             console.log(err);
           }
         });
       });
-      const emailToken = jt.sign({ username: username }, "jwtsecret", {
+      const emailToken = jt.sign({ user: username }, "jwtsecret", {
         expiresIn: "1d",
       });
       console.log(`This is email token: ${emailToken}`);
       const url = `http://localhost:3001/confirmation/${emailToken}`;
 
       await transporter.sendMail({
-        to: `gikoli3815@dukeoo.com`,
+        from: "sarathkumar@fastmail.com",
+        to: `${email}`,
         subject: "Confirm Email",
         text: "confirm this email",
         html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`,
@@ -78,6 +90,7 @@ app.post(
 app.post("/login", async (req: any, res: any) => {
   const { username, password } = req.body;
   const user = await UserInstance.findOne({ where: { username: username } });
+
   if (!user) {
     res.status(400).json({ error: "user dosent exist" });
   }
@@ -87,11 +100,12 @@ app.post("/login", async (req: any, res: any) => {
       return val.confirmed;
     }
   };
-  if (!userConfirmed) {
-    throw Error("Email is not confirmed");
-  }
 
   try {
+    if (!userConfirmed(user)) {
+      res.status(400).json({ err: "Email is not confirmed" });
+      throw Error("Email is not confirmed");
+    }
     const pwd = (user: any) => {
       return user.password;
     };
@@ -113,10 +127,33 @@ app.post("/login", async (req: any, res: any) => {
   }
 });
 
+app.get("/confirmation/:token", async (req: any, res: any) => {
+  try {
+    const decoded = jt.verify(req.params.token, "jwtsecret");
+
+    await UserInstance.update(
+      { confirmed: true },
+      { where: { username: (decoded as unknown as TokenInterface).user } }
+    );
+    res.status(200).json("Email verified");
+  } catch (err) {
+    res.status(400).json({ error: err });
+    console.log(err);
+  }
+});
+
 app.get("/profile", validateTokens, (req: any, res: any) => {
   res.json("GOT IT BUDDY");
 });
 
+app.get("/logout", (req: any, res: any) => {
+  try {
+    res.cookie("access-token", "", { maxAge: 1 });
+    res.status(200).json("logged out sucessfully");
+  } catch (err) {
+    console.log(err);
+  }
+});
 db.sync().then(() => {
   console.log("DB Connected");
 });

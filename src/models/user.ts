@@ -30,7 +30,7 @@ UserInstance.init(
     },
     confirmed: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true,
+      defaultValue: false,
     },
     address: {
       type: DataTypes.STRING,
