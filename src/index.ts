@@ -38,6 +38,7 @@ app.post(
     const validationresult = validationResult(req);
     if (!validationresult.isEmpty()) {
       res.status(400).json(validationresult.array());
+      return;
     }
     try {
       const emailcheck = await UserInstance.findAll({
@@ -49,11 +50,13 @@ app.post(
       });
       if (usernameCheck.length > 0) {
         res.status(400).json({ err: "username already exist" });
+        return;
       }
       if (emailcheck.length > 0) {
         res.status(400).json({ err: "Email already exist" });
+        return;
       }
-
+      console.log("hello");
       const createUser = bcrypt.hash(password, 10).then((hash: any) => {
         UserInstance.create({
           username: username,

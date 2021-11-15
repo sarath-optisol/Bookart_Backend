@@ -7,10 +7,11 @@
     "start": "node ./out/index.js",
     "build": "tsc -p",
     "dev": "nodemon ./src/index.ts",
-    "books": "nodemon ./src/books.ts",
+    "book": "nodemon ./src/book.ts",
     "con": "nodemon ./src/database/connection.ts",
     "auth": "node index.js",
-    "pretty": "prettier --write ."
+    "pretty": "prettier --write .",
+    "admin":"nodemon ./src/admin.ts"
   },
   "dependencies": {
     "@types/cookie-parser": "^1.4.2",
