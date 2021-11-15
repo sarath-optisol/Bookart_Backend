@@ -7,6 +7,7 @@ import db from "./database/Connection";
 import JWT from "jsonwebtoken";
 const { validateTokens } = require("./jwt");
 const { createtokens } = require("./jwt");
+const { adminvalidate } = require("./jwt");
 app.use(express.json());
 app.use(cookieParser());
 app.listen(3001, () => {
