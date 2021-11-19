@@ -1,13 +1,12 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const app = express();
-import jt, { JwtPayload } from "jsonwebtoken";
+import jt from "jsonwebtoken";
 const cookieParser = require("cookie-parser");
 import { createTransport, Transport, Transporter } from "nodemailer";
-import UserInstance from "./models/user";
-import db from "./database/Connection";
+import UserInstance from "../models/user";
+import db from "../database/Connection";
 import { check, validationResult } from "express-validator";
-import jwt from "./jwt";
 const { validateTokens } = require("./jwt");
 const { createtokens } = require("./jwt");
 app.use(express.json());
@@ -146,7 +145,7 @@ app.get("/confirmation/:token", async (req: any, res: any) => {
 });
 
 app.get("/profile", validateTokens, (req: any, res: any) => {
-  res.json("GOT IT BUDDY");
+  res.json();
 });
 
 app.get("/logout", (req: any, res: any) => {

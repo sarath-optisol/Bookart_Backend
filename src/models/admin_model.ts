@@ -3,6 +3,7 @@ import { Model } from "sequelize";
 import db from "../database/Connection";
 
 interface Admin {
+  adminId?: number;
   username: string;
   password: string;
 }
@@ -10,6 +11,11 @@ export default class AdminInstance extends Model<Admin> {}
 
 AdminInstance.init(
   {
+    adminId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     username: {
       allowNull: false,
       unique: true,
@@ -22,6 +28,7 @@ AdminInstance.init(
   },
   {
     sequelize: db,
-    tableName: "admin",
+    modelName: "admin",
+    timestamps: false,
   }
 );

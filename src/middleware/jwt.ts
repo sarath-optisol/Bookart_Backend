@@ -1,9 +1,9 @@
 import { sign, verify, decode } from "jsonwebtoken";
-import AdminInstance from "./models/admin_model";
+import AdminInstance from "../models/admin_model";
 
 const createtokens = (user: any) => {
   const acessToken = sign(
-    { username: user.username, id: user.id },
+    { username: user.username, id: user.userId },
     "jwtsecret"
   );
   return acessToken;
@@ -43,4 +43,4 @@ const adminvalidate = async (req: any, res: any, next: any) => {
   }
 };
 
-export = { createtokens, validateTokens, adminvalidate };
+export { createtokens, validateTokens, adminvalidate };

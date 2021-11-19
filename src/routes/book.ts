@@ -1,7 +1,7 @@
 import express from "express";
 import { check, validationResult } from "express-validator";
-import db from "./database/Connection";
-import BookInstance from "./models/books_model";
+import db from "../database/Connection";
+import BookInstance from "../models/books_model";
 import cookieParser from "cookie-parser";
 const { validateTokens, adminvalidate } = require("./jwt");
 import Sequelize from "sequelize";
@@ -27,7 +27,7 @@ app.post(
   check("releasedate", " Release date Required").notEmpty(),
   check("language", " Language Required").notEmpty(),
   check("description", " Release date Required").notEmpty(),
-  validateTokens,
+  check("noofbooks", " Number of books in stock").notEmpty(),
 
   async (req: any, res: any) => {
     const {
@@ -39,6 +39,7 @@ app.post(
       releasedate,
       language,
       description,
+      noofbooks,
     } = req.body;
 
     try {
@@ -63,6 +64,7 @@ app.post(
         releasedate: releasedate,
         language: language,
         description: description,
+        noofbooks: noofbooks,
       }).then(() => {
         res.status(200).json("book created");
       });

@@ -3,6 +3,7 @@ import { Model } from "sequelize";
 import db from "../database/Connection";
 
 interface Book {
+  bookId?: number;
   name: string;
   price: number;
   authorname: string;
@@ -11,11 +12,17 @@ interface Book {
   releasedate: Date;
   language: string;
   description: string;
+  noofbooks: number;
 }
 export default class BookInstance extends Model<Book> {}
 
 BookInstance.init(
   {
+    bookId: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING,
       unique: true,
@@ -49,9 +56,13 @@ BookInstance.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    noofbooks: {
+      type: DataTypes.INTEGER,
+    },
   },
   {
     sequelize: db,
-    tableName: "book",
+    modelName: "book",
+    timestamps: false,
   }
 );
