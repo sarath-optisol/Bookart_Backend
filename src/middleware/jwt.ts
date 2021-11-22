@@ -9,6 +9,14 @@ const createtokens = (user: any) => {
   return acessToken;
 };
 
+const createAdmintokens = (admin: any) => {
+  const acessToken = sign(
+    { username: admin.username, adminId: admin.adminId },
+    "jwtsecret"
+  );
+  return acessToken;
+};
+
 const validateTokens = async (req: any, res: any, next: any) => {
   const accessToken = req.cookies["access-token"];
   if (!accessToken) {
@@ -43,4 +51,4 @@ const adminvalidate = async (req: any, res: any, next: any) => {
   }
 };
 
-export { createtokens, validateTokens, adminvalidate };
+export { createtokens, validateTokens, adminvalidate, createAdmintokens };

@@ -4,14 +4,16 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node ./out/index.js",
+    "start": "node ./out/routes/index.js",
     "build": "tsc -p",
-    "dev": "nodemon ./src/index.ts",
-    "book": "nodemon ./src/book.ts",
-    "con": "nodemon ./src/database/connection.ts",
+    "dev": "nodemon ./src/routes/index.ts",
+    "book": "nodemon ./src/routes/book.ts",
+    "order": "nodemon ./src/routes/order.ts",
     "auth": "node index.js",
     "pretty": "prettier --write .",
-    "admin":"nodemon ./src/admin.ts"
+    "admin":"nodemon ./src/routes/admin.ts",
+    "user": "node ./out/routes/user.js",
+    "server":"nodemon ./src/server.ts"
   },
   "dependencies": {
     "@types/cookie-parser": "^1.4.2",

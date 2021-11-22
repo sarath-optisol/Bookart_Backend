@@ -12,7 +12,7 @@ interface Book {
   releasedate: Date;
   language: string;
   description: string;
-  noofbooks: number;
+  quantity: number;
 }
 export default class BookInstance extends Model<Book> {}
 
@@ -56,7 +56,7 @@ BookInstance.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    noofbooks: {
+    quantity: {
       type: DataTypes.INTEGER,
     },
   },

@@ -45,8 +45,10 @@ const adminProfile = async (req: any, res: any) => {
       return;
     }
 
-    res.json("Admin profile view");
+    res.status(200).json("Admin profile view");
   } catch (err) {
     console.log(err);
   }
 };
+
+export { adminProfile, adminlogin };

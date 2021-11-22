@@ -10,7 +10,7 @@ interface User {
   email: string;
   confirmed: Boolean;
   address?: string;
-  mobile?: string;
+  mobile?: number;
 }
 export default class UserInstance extends Model<User> {}
 
@@ -44,6 +44,9 @@ UserInstance.init(
     },
     mobile: {
       type: DataTypes.INTEGER,
+      validate: {
+        max: 10,
+      },
     },
   },
   {
