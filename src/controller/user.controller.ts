@@ -98,11 +98,7 @@ const loginUser = async (req: any, res: any) => {
         res.status(400).json({ error: "Wrong pass" });
       } else {
         const accessTokens = createtokens(user);
-        res.cookie("access-token", accessTokens, {
-          maxAge: 86400000,
-          httpOnly: true,
-        });
-        res.json("LOGGED IN");
+        res.status(200).json({ token: accessTokens });
       }
     });
   } catch (err) {
@@ -125,9 +121,9 @@ const confirmEmail = async (req: any, res: any) => {
 };
 
 const userLogout = (req: any, res: any) => {
+  const token = req.body.tokenPayload;
   try {
-    res.cookie("access-token", "", { maxAge: 1 });
-    res.status(200).json("logged out sucessfully");
+    res.status(200).json({ token: "" });
   } catch (err) {
     console.log(err);
   }

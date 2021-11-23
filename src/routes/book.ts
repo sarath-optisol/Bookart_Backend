@@ -8,7 +8,7 @@ import {
   searchBookById,
 } from "../controller/books.controller";
 import { bookCreatevalidator } from "../middleware/validators";
-import { validateTokens, adminvalidate } from "../middleware/jwt";
+import { validateTokens, adminvalidate } from "../middleware/validateTokens";
 import express from "express";
 const router = express.Router();
 router.post(

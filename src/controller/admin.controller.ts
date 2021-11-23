@@ -1,4 +1,4 @@
-import { createtokens } from "../middleware/jwt";
+import { createAdmintokens, createtokens } from "../middleware/jwt";
 import AdminInstance from "../models/admin_model";
 import JWT from "jsonwebtoken";
 
@@ -17,12 +17,9 @@ const adminlogin = async (req: any, res: any) => {
     };
     const dbpass = pass(admin);
     if (dbpass === password) {
-      const accessTokens = createtokens(admin);
-      res.cookie("access-token", accessTokens, {
-        maxAge: 86400000,
-        httpOnly: true,
-      });
-      res.json("Admin authenticated");
+      const accessTokens = createAdmintokens(admin);
+
+      res.status(200).json({ token: accessTokens });
     } else {
       res.status(400).json({ err: "wrong pass" });
     }
@@ -32,19 +29,7 @@ const adminlogin = async (req: any, res: any) => {
 };
 
 const adminProfile = async (req: any, res: any) => {
-  const token = req.cookies["access-token"];
-
   try {
-    const decode = JWT.decode(token, { complete: true });
-    const username = decode?.payload.username;
-    const admin = await AdminInstance.findAll({
-      where: { username: username },
-    });
-    if (admin.length <= 0) {
-      res.status(400).json("Users cannot acess admin page");
-      return;
-    }
-
     res.status(200).json("Admin profile view");
   } catch (err) {
     console.log(err);

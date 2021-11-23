@@ -1,10 +1,11 @@
-import { sign, verify, decode } from "jsonwebtoken";
-import AdminInstance from "../models/admin_model";
+import { sign } from "jsonwebtoken";
+import { Request } from "express";
 
 const createtokens = (user: any) => {
   const acessToken = sign(
-    { username: user.username, id: user.userId },
-    "jwtsecret"
+    { username: user.username, userId: user.userId },
+    "jwtsecret",
+    { expiresIn: "3d" }
   );
   return acessToken;
 };
@@ -12,43 +13,20 @@ const createtokens = (user: any) => {
 const createAdmintokens = (admin: any) => {
   const acessToken = sign(
     { username: admin.username, adminId: admin.adminId },
-    "jwtsecret"
+    "jwtsecret",
+    { expiresIn: "3d" }
   );
   return acessToken;
 };
 
-const validateTokens = async (req: any, res: any, next: any) => {
-  const accessToken = req.cookies["access-token"];
-  if (!accessToken) {
-    return res.status(400).json({ err: "User not authenticated" });
+const getToken = (req: Request) => {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.split(" ")[0] === "Bearer"
+  ) {
+    return req.headers.authorization.split(" ")[1];
   }
-  try {
-    const validToken = verify(accessToken, "jwtsecret");
-    req.authenticated = true;
-    return next();
-  } catch (err) {
-    return res.status(400).json({ err: err });
-  }
-};
-const adminvalidate = async (req: any, res: any, next: any) => {
-  const token = req.cookies["access-token"];
-
-  try {
-    const decoded = decode(token, { complete: true });
-    const username = decoded?.payload.username;
-    const admin = await AdminInstance.findAll({
-      where: { username: username },
-    });
-    if (admin.length <= 0) {
-      res.status(400).json("Users cannot acess admin page");
-      throw Error("Users cannot acess admin page");
-      return;
-    } else {
-      return next();
-    }
-  } catch (err) {
-    return res.status(400).json({ err: err });
-  }
+  return null;
 };
 
-export { createtokens, validateTokens, adminvalidate, createAdmintokens };
+export { createtokens, createAdmintokens, getToken };

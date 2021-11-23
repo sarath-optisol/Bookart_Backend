@@ -6,6 +6,7 @@ interface orderItems {
   orderId: number;
   bookId: number;
   quantity: number;
+  isdelete?: boolean;
 }
 
 export default class OrderItemsInstance extends Model<orderItems> {}
@@ -28,6 +29,9 @@ OrderItemsInstance.init(
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    isdelete: {
+      type: DataTypes.BOOLEAN,
     },
   },
   {

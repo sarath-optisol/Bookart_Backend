@@ -11,6 +11,7 @@ interface User {
   confirmed: Boolean;
   address?: string;
   mobile?: number;
+  isdelete?: boolean;
 }
 export default class UserInstance extends Model<User> {}
 
@@ -47,6 +48,9 @@ UserInstance.init(
       validate: {
         max: 10,
       },
+    },
+    isdelete: {
+      type: DataTypes.BOOLEAN,
     },
   },
   {

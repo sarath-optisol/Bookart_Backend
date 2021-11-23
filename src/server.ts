@@ -3,6 +3,7 @@ import express from "express";
 import { userRoutes } from "./routes/user";
 import { adminRouter } from "./routes/admin";
 import { bookRouter } from "./routes/book";
+import { orderRouter } from "./routes/order";
 const cookieParser = require("cookie-parser");
 const app = express();
 app.use(cookieParser());
@@ -17,3 +18,5 @@ db.sync().then(() => {
 app.use(userRoutes);
 app.use(adminRouter);
 app.use(bookRouter);
+
+app.use(orderRouter);

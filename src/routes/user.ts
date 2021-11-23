@@ -4,7 +4,7 @@ import {
   confirmEmail,
   loginUser,
 } from "../controller/user.controller";
-import { validateTokens } from "../middleware/jwt";
+import { validateTokens } from "../middleware/validateTokens";
 import { registerValdiator, loginValidator } from "../middleware/validators";
 import express from "express";
 const router = express.Router();

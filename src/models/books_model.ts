@@ -13,6 +13,7 @@ interface Book {
   language: string;
   description: string;
   quantity: number;
+  isdelete?: boolean;
 }
 export default class BookInstance extends Model<Book> {}
 
@@ -58,6 +59,9 @@ BookInstance.init(
     },
     quantity: {
       type: DataTypes.INTEGER,
+    },
+    isdelete: {
+      type: DataTypes.BOOLEAN,
     },
   },
   {
