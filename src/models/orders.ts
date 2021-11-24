@@ -8,7 +8,6 @@ interface orders {
   ordersId?: number;
   userId: number;
   orderDate: String;
-  isdelete?: boolean;
 }
 export default class OrdersInstance extends Model<orders> {}
 
@@ -26,11 +25,8 @@ OrdersInstance.init(
     orderDate: {
       type: DataTypes.STRING,
     },
-    isdelete: {
-      type: DataTypes.BOOLEAN,
-    },
   },
-  { sequelize: db, modelName: "orders", timestamps: false }
+  { sequelize: db, modelName: "orders", paranoid: true }
 );
 OrdersInstance.belongsToMany(BookInstance, {
   through: OrderItemsInstance,

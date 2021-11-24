@@ -12,6 +12,7 @@ const createBook = async (req: any, res: any) => {
     language,
     description,
     quantity,
+    category,
   } = req.body;
 
   try {
@@ -37,6 +38,7 @@ const createBook = async (req: any, res: any) => {
       language: language,
       description: description,
       quantity: quantity,
+      category: category,
     }).then(() => {
       res.status(200).json("book created");
     });

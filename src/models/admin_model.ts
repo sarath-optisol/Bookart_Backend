@@ -29,6 +29,6 @@ AdminInstance.init(
   {
     sequelize: db,
     modelName: "admin",
-    timestamps: false,
+    paranoid: true,
   }
 );

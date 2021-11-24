@@ -13,7 +13,7 @@ interface Book {
   language: string;
   description: string;
   quantity: number;
-  isdelete?: boolean;
+  category: string;
 }
 export default class BookInstance extends Model<Book> {}
 
@@ -21,8 +21,8 @@ BookInstance.init(
   {
     bookId: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
       primaryKey: true,
+      autoIncrement: true,
     },
     name: {
       type: DataTypes.STRING,
@@ -60,13 +60,15 @@ BookInstance.init(
     quantity: {
       type: DataTypes.INTEGER,
     },
-    isdelete: {
-      type: DataTypes.BOOLEAN,
+    category: {
+      type: DataTypes.STRING,
+      defaultValue: "All",
+      allowNull: false,
     },
   },
   {
     sequelize: db,
     modelName: "book",
-    timestamps: false,
+    paranoid: true,
   }
 );

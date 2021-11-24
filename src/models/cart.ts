@@ -4,31 +4,33 @@ import db from "../database/Connection";
 interface cart {
   userId?: number;
   cartId?: number;
+  bookId?: number;
   quantity: number;
-  isdelete?: boolean;
 }
 export default class CartInstance extends Model<cart> {}
 
 CartInstance.init(
   {
-    userId: {
-      type: DataTypes.NUMBER,
-    },
     cartId: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    quantity: {
-      type: DataTypes.NUMBER,
-      defaultValue: 1,
+    userId: {
+      type: DataTypes.INTEGER,
     },
-    isdelete: {
-      type: DataTypes.BOOLEAN,
+    bookId: {
+      type: DataTypes.INTEGER,
+    },
+
+    quantity: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
     },
   },
   {
     sequelize: db,
     modelName: "cart",
+    paranoid: true,
   }
 );

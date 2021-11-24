@@ -6,7 +6,6 @@ interface orderItems {
   orderId: number;
   bookId: number;
   quantity: number;
-  isdelete?: boolean;
 }
 
 export default class OrderItemsInstance extends Model<orderItems> {}
@@ -30,13 +29,10 @@ OrderItemsInstance.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    isdelete: {
-      type: DataTypes.BOOLEAN,
-    },
   },
   {
     sequelize: db,
     modelName: "order_items",
-    timestamps: false,
+    paranoid: true,
   }
 );

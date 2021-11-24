@@ -4,6 +4,7 @@ import { userRoutes } from "./routes/user";
 import { adminRouter } from "./routes/admin";
 import { bookRouter } from "./routes/book";
 import { orderRouter } from "./routes/order";
+import { cartRouter } from "./routes/cart";
 const cookieParser = require("cookie-parser");
 const app = express();
 app.use(cookieParser());
@@ -20,3 +21,4 @@ app.use(adminRouter);
 app.use(bookRouter);
 
 app.use(orderRouter);
+app.use(cartRouter);
