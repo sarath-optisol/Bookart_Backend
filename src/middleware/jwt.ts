@@ -19,13 +19,11 @@ const createAdmintokens = (admin: any) => {
   return acessToken;
 };
 
-const getToken = (req: Request) => {
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.split(" ")[0] === "Bearer"
-  ) {
-    return req.headers.authorization.split(" ")[1];
+const getToken = (req: any) => {
+  if (req.headers.auth && req.headers.auth.split(" ")[0] === "Bearer") {
+    return req.headers.auth.split(" ")[1];
   }
+  console.log(req.headers.auth);
   return null;
 };
 

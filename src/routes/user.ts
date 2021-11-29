@@ -9,9 +9,9 @@ import { registerValdiator, loginValidator } from "../middleware/validators";
 import express from "express";
 const router = express.Router();
 
-router.post("/register", registerValdiator, registerUser);
-router.post("/login", loginValidator, loginUser);
-router.get("/confirmation/:token", confirmEmail);
-router.get("/logout", validateTokens, userLogout);
-router.get("/profile", validateTokens);
+router.post("/user/register", registerValdiator, registerUser);
+router.post("/user/login", loginValidator, loginUser);
+router.get("/user/confirmation/:token", confirmEmail);
+router.get("/user/logout", validateTokens, userLogout);
+router.get("/user/profile", validateTokens);
 export { router as userRoutes };

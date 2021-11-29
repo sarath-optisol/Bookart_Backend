@@ -11,9 +11,12 @@
     "order": "nodemon ./src/routes/order.ts",
     "auth": "node index.js",
     "pretty": "prettier --write .",
-    "admin":"nodemon ./src/routes/admin.ts",
+    "admin": "nodemon ./src/routes/admin.ts",
     "user": "node ./out/routes/user.js",
-    "server":"nodemon ./src/server.ts"
+    "server": "nodemon ./src/server.ts",
+    "test": "mocha -r ts-node/register ./src/test/bookTest.ts",
+    "tests":"mocha -r nodemon ./out/test/bookTest.js",
+    "coverage": "nyc -r lcov -e .ts -x \"*.bookTest.ts\" npm run test"
   },
   "dependencies": {
     "@types/cookie-parser": "^1.4.2",
@@ -24,6 +27,7 @@
     "@types/node": "^16.11.2",
     "@types/nodemailer": "^6.4.4",
     "@types/sequelize": "^4.28.10",
+    "@types/swagger-ui": "^3.52.0",
     "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -35,7 +39,6 @@
     "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
     "mariadb": "^2.5.5",
-    "mocha": "^9.1.3",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.2",
@@ -49,9 +52,19 @@
     "sequelize": "^6.8.0",
     "sequelize-cli": "^6.2.0",
     "supertest": "^6.1.6",
-    "ts-node": "^10.4.0",
-    "typeorm": "^0.2.38",
-    "typescript": "^4.4.4"
+    "swagger-ui": "^4.1.0",
+    "typeorm": "^0.2.38"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/chai": "^4.2.22",
+    "@types/chai-http": "^4.2.0",
+    "@types/mocha": "^9.0.0",
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
+    "mocha": "^9.1.3",
+    "mocha-cli": "^1.0.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  }
 }

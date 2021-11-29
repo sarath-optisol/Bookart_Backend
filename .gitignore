@@ -2,3 +2,5 @@
 /out
 package-lock.json
 /rough.txt
+/.nyc_output
+/coverage

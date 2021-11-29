@@ -18,7 +18,7 @@ router.post(
   createBook
 );
 router.put("/book/update/:id", [validateTokens, adminvalidate], updateBook);
-router.get("/books", getAllBooks);
+router.get("/book/all", getAllBooks);
 router.delete("/book/delete/:id", [validateTokens, adminvalidate], deleteBook);
 router.get("/book/searchbyid/:id", searchBookById);
 router.get("/book/search", searchBook);

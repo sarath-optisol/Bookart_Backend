@@ -9,7 +9,7 @@ const addProductToCart = async (req: any, res: any) => {
       where: { userId: userId, bookId: bookId },
     });
     if (cart) {
-      await cart.update({ quantity: quantity });
+      await cart.update({ quantity });
       return res.status(200).json("Quantity updated");
     }
     const createcart = await CartInstance.create({
@@ -32,7 +32,8 @@ const updateCart = async (req: any, res: any) => {
     });
     if (cart) {
       await cart.update({ quantity: quantity });
-      return res.status(200).json("Book updated ");
+      await cart.save();
+      return res.status(200).json("Cart updated ");
     }
 
     return res.status(400).json("There is no such book in cart ");
@@ -43,10 +44,10 @@ const updateCart = async (req: any, res: any) => {
 
 const deleteById = async (req: any, res: any) => {
   const { userId } = req.body.tokenPayload;
-  const { bookId } = req.params.id;
+  const { id } = req.params;
   try {
     const cart = await CartInstance.findOne({
-      where: { userId: userId, bookId: bookId },
+      where: { userId: userId, bookId: id },
     });
     if (cart) {
       await cart.destroy();

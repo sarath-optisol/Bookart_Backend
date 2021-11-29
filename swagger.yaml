@@ -1,0 +1,480 @@
+openapi: 3.0.0
+info:
+  title: "Bookart"
+  description: "e-comm application"
+  version: 1.1.1
+servers:
+  - url: http://localhost:3001
+
+tags:
+  - name: "User"
+    description: "user account features"
+    externalDocs:
+      description: "user and seller can access their account"
+      url: "http://localhost:3001/user"
+  - name: "Admin"
+    description: "Admin account features"
+    externalDocs:
+      description: "Admin have access to all features"
+      url: "http://localhost:3001/admin"
+  - name: "Book"
+    description: "Book features"
+    externalDocs:
+      description: "Book Oprerations"
+      url: "http://localhost:3001/book"
+  - name: "Cart"
+    description: "Cart features"
+    externalDocs:
+      description: "cart Operations"
+      url: "http://localhost:3001/cart"
+  - name: "Order"
+    description: "order features"
+    externalDocs:
+      description: "order Operations"
+      url: "http://localhost:3001/orders"
+paths:
+  /user/register:
+    post:
+      tags:
+        - "User"
+      summary: Create a User
+      description: "Creates a User and triggers a email to check the registered user mail"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "user2"
+                email:
+                  type: string
+                  example: "mivolom988@jasmne.com"
+                password:
+                  type: string
+                  example: "pass2"
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "bad request"
+  /user/login:
+    post:
+      tags:
+        - "User"
+      summary: Login User
+      description: "Login into a user account"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "user2"
+                password:
+                  type: string
+                  example: "pass2"
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "bad request"
+
+  /admin/login:
+    post:
+      tags:
+        - "Admin"
+      summary: Login Admin
+      description: "Login into a Admin account"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "sarath-admin"
+                password:
+                  type: string
+                  example: "pass123"
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "bad request"
+
+  /admin/profile:
+    get:
+      tags:
+        - "Admin"
+      summary: Get Admin profile
+      parameters:
+        - name: auth
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "bad request"
+
+  /book/create:
+    post:
+      tags:
+        - "Book"
+      summary: Add a book
+      description: "Add new Book by admin"
+      parameters:
+        - name: auth
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Stoic learnings"
+                quantity:
+                  type: integer
+                  example: 20
+                authorname:
+                  type: string
+                  example: "aristole"
+                description:
+                  type: string
+                  example: "fictional book for kids"
+                category:
+                  type: string
+                  example: "Life"
+                publisher:
+                  type: string
+                  example: "Penguin"
+                image:
+                  type: string
+                  example: "https://image.jpg"
+                price:
+                  type: integer
+                  example: 5000
+                releasedate:
+                  type: string
+                  example: "2020"
+                language:
+                  type: string
+                  example: "English"
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "bad request"
+
+  /book/all:
+    get:
+      tags:
+        - "Book"
+      summary: Get all books
+      description: Get all books stored inside database
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "bad request"
+
+  /book/update/{id}:
+    put:
+      tags:
+        - "Book"
+      summary: Update Book
+      description: Update Book by id
+      parameters:
+        - name: auth
+          in: header
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the book to update a particular book
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Stoic learnings"
+                quantity:
+                  type: integer
+                  example: 20
+                authorname:
+                  type: string
+                  example: "aristole"
+                description:
+                  type: string
+                  example: "fictional book for kids"
+                category:
+                  type: string
+                  example: "Life"
+                publisher:
+                  type: string
+                  example: "Penguin"
+                image:
+                  type: string
+                  example: "https://image.jpg"
+                price:
+                  type: integer
+                  example: 5000
+                releasedate:
+                  type: string
+                  example: "2020"
+                language:
+                  type: string
+                  example: "English"
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+
+  /book/author/{authorname}:
+    get:
+      tags:
+        - "Book"
+      summary: Get books by author name
+      description: Get books by a specific author by sending the author name
+      parameters:
+        - in: path
+          name: authorname
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+
+  /book/delete/{id}:
+    delete:
+      tags:
+        - "Book"
+      summary: Delete book by Id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /book/searchbyid/{id}:
+    get:
+      tags:
+        - "Book"
+      summary: search book by Id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /cart/create:
+    post:
+      tags:
+        - "Cart"
+      summary: Add product to cart
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bookId:
+                  type: integer
+                  example: 2
+                quantity:
+                  type: integer
+                  example: 5
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /cart/update:
+    put:
+      tags:
+        - "Cart"
+      summary: Update product in cart
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bookId:
+                  type: integer
+                  example: 2
+                quantity:
+                  type: integer
+                  example: 5
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /cart/delete/{id}:
+    delete:
+      tags:
+        - "Cart"
+      summary: Delete a product in cart
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /cart:
+    get:
+      tags:
+        - "Cart"
+      summary: get product in cart
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /cart/deleteall:
+    delete:
+      tags:
+        - "Cart"
+      summary: Delete all products in cart
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+
+  /orders/create:
+    post:
+      tags:
+        - "Order"
+      summary: Order Products
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                books:
+                  type: array
+                  items:
+                    type: object
+                  example:
+                    [
+                      { "bookId": 1, "quantity": 5 },
+                      { "bookId": 2, "quantity": 5 },
+                    ]
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /orders/delete/{id}:
+    delete:
+      tags:
+        - "Order"
+      summary: Order Products
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /orders/get:
+    get:
+      tags:
+        - "Order"
+      summary: Get all orders
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
