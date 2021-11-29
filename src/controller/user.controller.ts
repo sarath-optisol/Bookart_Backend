@@ -38,18 +38,20 @@ const registerUser = async (req: any, res: any) => {
       return;
     }
 
-    const createUser = bcrypt.hash(password, 10).then((hash: any) => {
-      UserInstance.create({
-        username: username,
-        password: hash,
-        email: email,
-        confirmed: false,
-      }).catch((err) => {
-        if (err) {
-          console.log(err);
-        }
+    const createUser = await bcrypt
+      .hash(password, 10)
+      .then(async (hash: any) => {
+        await UserInstance.create({
+          username: username,
+          password: hash,
+          email: email,
+          confirmed: false,
+        }).catch((err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
       });
-    });
     const emailToken = jt.sign({ user: username }, "jwtsecret", {
       expiresIn: "1d",
     });
@@ -63,7 +65,7 @@ const registerUser = async (req: any, res: any) => {
       text: "confirm this email",
       html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`,
     });
-    createUser.then(() => res.json("USER REGISTERED"));
+    return res.json("USER REGISTERED");
   } catch (err) {
     console.log(err);
     return res.json({ error: err });
@@ -93,7 +95,7 @@ const loginUser = async (req: any, res: any) => {
       return user.password;
     };
     const dbpass = pwd(user);
-    bcrypt.compare(password, dbpass).then((match: any) => {
+    await bcrypt.compare(password, dbpass).then((match: any) => {
       if (!match) {
         res.status(400).json({ error: "Wrong pass" });
       } else {
@@ -128,5 +130,69 @@ const userLogout = (req: any, res: any) => {
     console.log(err);
   }
 };
+const updateAddress = async (req: any, res: any) => {
+  const userId = req.body.tokenPayload.userId;
+  const address = req.body.address;
+  try {
+    const user = await UserInstance.findByPk(userId);
+    if (!user) {
+      return res.status(400).json("No user found");
+    }
+    if (!address) {
+      return res.status(400).json("Send address");
+    }
+    const updated = await user.update({ address: address });
+    return res.status(200).json(updated);
+  } catch (err) {
+    return res.status(400).json({ error: err });
+  }
+};
 
-export { userLogout, registerUser, confirmEmail, loginUser };
+const updateMobile = async (req: any, res: any) => {
+  const userId = req.body.tokenPayload.userId;
+  const mobile = req.body.mobile;
+  try {
+    const user = await UserInstance.findByPk(userId);
+    if (!user) {
+      return res.status(400).json("No user found");
+    }
+    if (!mobile) {
+      return res.status(400).json("Send address");
+    }
+    const updated = await user.update({ mobile: mobile });
+    return res.status(200).json(updated);
+  } catch (err) {
+    return res.status(400).json({ error: err });
+  }
+};
+const changePassword = async (req: any, res: any) => {
+  const userId = req.body.tokenPayload.userId;
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const user: any = await UserInstance.findByPk(userId);
+    if (!user) {
+      return res.status(400).json("User doesnt exist");
+    }
+    const userPass = user.password;
+    await bcrypt.compare(oldPassword, userPass).then((match: any) => {
+      if (!match) {
+        throw Error("Wrong pass");
+      }
+    });
+    console.log("enter");
+    const change = await bcrypt.hash(newPassword, 10);
+    await user.update({ password: change });
+    res.status(200).json("password updated");
+  } catch (err: any) {
+    res.status(400).json(err.message);
+  }
+};
+export {
+  userLogout,
+  registerUser,
+  confirmEmail,
+  loginUser,
+  updateAddress,
+  updateMobile,
+  changePassword,
+};

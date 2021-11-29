@@ -36,4 +36,25 @@ const bookCreatevalidator = async (req: any, res: any, next: any) => {
   } else return next();
 };
 
-export { bookCreatevalidator, loginValidator, registerValdiator };
+const mobileValidate = async (req: any, res: any, next: any) => {
+  const number = req.body.mobile;
+  const mobile = number.toString();
+  const regexp = new RegExp("^[6-9]d{9}$");
+  const reg = regexp.test(number);
+  if (typeof number != "number") {
+    return res.status(400).json("Enter number");
+  }
+  if (!(mobile.length === 10)) {
+    return res.status(400).json("mobile number should have only 10 number");
+  }
+  if (!reg) {
+    return res.status(400).json("Enter mobile valid number");
+  }
+  return next();
+};
+export {
+  bookCreatevalidator,
+  loginValidator,
+  registerValdiator,
+  mobileValidate,
+};
