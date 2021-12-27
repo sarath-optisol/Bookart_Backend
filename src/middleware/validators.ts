@@ -39,8 +39,8 @@ const bookCreatevalidator = async (req: any, res: any, next: any) => {
 const mobileValidate = async (req: any, res: any, next: any) => {
   const number = req.body.mobile;
   const mobile = number.toString();
-  const regexp = new RegExp("^[6-9]d{9}$");
-  const reg = regexp.test(number);
+  const regexp = new RegExp("^[6-9][0-9]{9}$");
+  const reg = regexp.test(mobile);
   if (typeof number != "number") {
     return res.status(400).json("Enter number");
   }

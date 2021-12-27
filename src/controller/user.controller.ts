@@ -2,8 +2,9 @@ import { createTransport } from "nodemailer";
 import UserInstance from "../models/user";
 import jt from "jsonwebtoken";
 import { createtokens } from "../middleware/jwt";
-const bcrypt = require("bcrypt");
+import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
+import { stripe } from "../server";
 interface TokenInterface {
   user: string;
   iat: Number;
@@ -56,7 +57,7 @@ const registerUser = async (req: any, res: any) => {
       expiresIn: "1d",
     });
     console.log(`This is email token: ${emailToken}`);
-    const url = `http://localhost:3001/confirmation/${emailToken}`;
+    const url = `http://localhost:3001/user/confirmation/${emailToken}`;
 
     await transporter.sendMail({
       from: "sarathkumar@fastmail.com",
@@ -65,6 +66,11 @@ const registerUser = async (req: any, res: any) => {
       text: "confirm this email",
       html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`,
     });
+    const { id } = await stripe.customers.create({
+      name: username,
+      email: email,
+    });
+    await UserInstance.update({ customerId: id }, { where: { email: email } });
     return res.json("USER REGISTERED");
   } catch (err) {
     console.log(err);
@@ -75,18 +81,16 @@ const registerUser = async (req: any, res: any) => {
 const loginUser = async (req: any, res: any) => {
   const { username, password } = req.body;
   const user = await UserInstance.findOne({ where: { username: username } });
-
-  if (!user) {
-    res.status(400).json({ error: "user dosent exist" });
-  }
-  const userConfirmed = (val: any) => {
-    if ("confirmed" in val) {
-      console.log(val.confirmed);
-      return val.confirmed;
-    }
-  };
-
   try {
+    if (!user) {
+      return res.status(400).json({ error: "user dosent exist" });
+    }
+    const userConfirmed = (val: any) => {
+      if ("confirmed" in val) {
+        return val.confirmed;
+      }
+    };
+
     if (!userConfirmed(user)) {
       res.status(400).json({ err: "Email is not confirmed" });
       throw Error("Email is not confirmed");
@@ -179,12 +183,73 @@ const changePassword = async (req: any, res: any) => {
         throw Error("Wrong pass");
       }
     });
-    console.log("enter");
     const change = await bcrypt.hash(newPassword, 10);
     await user.update({ password: change });
     res.status(200).json("password updated");
   } catch (err: any) {
     res.status(400).json(err.message);
+  }
+};
+
+const forgotPassword = async (req: any, res: any) => {
+  const { email } = req.body;
+  try {
+    const user: any = await UserInstance.findOne({ where: { email: email } });
+    if (!user) {
+      return res.status(400).json("Email id doesnt exist ");
+    }
+    const userId = user.userId;
+    const secret = "jwtsecret" + user.password;
+    const emailToken = jt.sign({ userId: userId, email: user.email }, secret, {
+      expiresIn: "15m",
+    });
+    const link = `http://localhost:3001/user/reset-password/${userId}/${emailToken}`;
+    await transporter.sendMail({
+      from: "sarathkumar@fastmail.com",
+      to: `${email}`,
+      subject: "Reset Password",
+      html: `This is a one time link to change the password: <br></br>
+      <a href="${link}">${link}</a>`,
+    });
+    return res.status(200).json("Link to change password is sent to your mail");
+  } catch (err) {
+    res.status(200).json(err);
+  }
+};
+const getResetPassword = async (req: any, res: any) => {
+  const { id, token } = req.params;
+  try {
+    const user: any = await UserInstance.findByPk(id);
+    if (!user) {
+      return res.status(400).json("Email id doesnt exist ");
+    }
+    const secret = "jwtsecret" + user.password;
+    const verified = jt.verify(token, secret);
+    res.render("reset-password");
+  } catch (err) {
+    console.log(err);
+    res.status(400).json("Invalid address");
+  }
+};
+const resetPassword = async (req: any, res: any) => {
+  const { id, token } = req.params;
+  const { password, confirmpass } = req.body;
+  console.log(password);
+  console.log(confirmpass);
+  try {
+    const user: any = await UserInstance.findByPk(id);
+    if (!user) {
+      return res.status(400).json("Email id doesnt exist ");
+    }
+    const secret = "jwtsecret" + user.password;
+    const verified = await jt.verify(token, secret);
+    await bcrypt.hash(password, 10).then(async (hash: any) => {
+      await user.update({ password: hash });
+    });
+    res.status(200).json("password changed");
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(err);
   }
 };
 export {
@@ -195,4 +260,7 @@ export {
   updateAddress,
   updateMobile,
   changePassword,
+  forgotPassword,
+  resetPassword,
+  getResetPassword,
 };

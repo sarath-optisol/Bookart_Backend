@@ -47,13 +47,13 @@ paths:
               properties:
                 username:
                   type: string
-                  example: "user2"
+                  example: "user3"
                 email:
                   type: string
                   example: "mivolom988@jasmne.com"
                 password:
                   type: string
-                  example: "pass2"
+                  example: "pass3"
       responses:
         200:
           description: "success"
@@ -73,16 +73,112 @@ paths:
               properties:
                 username:
                   type: string
-                  example: "user2"
+                  example: "user3"
                 password:
                   type: string
-                  example: "pass2"
+                  example: "pass3"
       responses:
         200:
           description: "success"
         400:
           description: "bad request"
-
+  /user/address:
+    put:
+      tags:
+        - "User"
+      summary: Update address
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                  example: "this is a address"
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "bad request"
+  /user/mobile:
+    put:
+      tags:
+        - "User"
+      summary: Update Mobile number
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: number
+                  example: 8925122841
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "bad request"
+  /user/forgot-password:
+    post:
+      tags:
+        - "User"
+      summary: Forgot password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "viwaref997@servergem.com"
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "bad request"
+  /user/password:
+    put:
+      tags:
+        - "User"
+      summary: change password
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                  example: pass3
+                newPassword:
+                  type: string
+                  example: pass3
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "bad request"
   /admin/login:
     post:
       tags:
@@ -300,6 +396,22 @@ paths:
           description: "success"
         400:
           description: "Bad request"
+  /book/search:
+    get:
+      tags:
+        - "Book"
+      summary: search book by Id
+      parameters:
+        - in: query
+          name: term
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
   /cart/create:
     post:
       tags:
@@ -473,6 +585,59 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /orders/cart:
+    post:
+      tags:
+        - "Order"
+      summary: Place order from cart
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /orders/user:
+    get:
+      tags:
+        - "Order"
+      summary: Get all orders done by user
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "Bad request"
+  /orders/user/:{id}:
+    get:
+      tags:
+        - "Order"
+      summary: Get all orders done by user
+      parameters:
+        - in: header
+          name: auth
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
       responses:
         200:
           description: "success"

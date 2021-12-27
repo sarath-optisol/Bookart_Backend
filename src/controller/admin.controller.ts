@@ -1,6 +1,9 @@
 import { createAdmintokens, createtokens } from "../middleware/jwt";
 import AdminInstance from "../models/admin_model";
 import JWT from "jsonwebtoken";
+import PaymentInstance from "../models/payment";
+import sequelize from "sequelize";
+import { all } from "sequelize/types/lib/operators";
 
 const adminlogin = async (req: any, res: any) => {
   const { username, password } = req.body;
@@ -36,4 +39,14 @@ const adminProfile = async (req: any, res: any) => {
   }
 };
 
-export { adminProfile, adminlogin };
+const getTotalRevenue = async (req: any, res: any) => {
+  try {
+    const allPayment: any = await PaymentInstance.findAll({
+      attributes: [[sequelize.fn("sum", sequelize.col("amount")), "total"]],
+      raw: true,
+    });
+    console.log(allPayment[0].total);
+  } catch (err) {}
+};
+
+export { adminProfile, adminlogin, getTotalRevenue };

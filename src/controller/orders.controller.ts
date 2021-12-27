@@ -7,6 +7,8 @@ import { TokenDecoder } from "../middleware/userTokenDecode";
 import CartInstance from "../models/cart";
 import { transcode } from "buffer";
 import { where } from "sequelize";
+import PaymentInstance from "../models/payment";
+import { stripe } from "../server";
 
 const createOrder = async (req: any, res: any) => {
   const trans = await db.transaction();
@@ -226,6 +228,61 @@ const findOrderItemsByUser = async (req: any, res: any) => {
   res.send(orderItems);
 };
 
+const payment = async (req: any, res: any) => {
+  const orderId = req.params.id;
+  const { userId } = req.body.tokenPayload;
+  const { card } = req.body;
+  try {
+    const user: any = await UserInstance.findByPk(userId);
+    if (!user) {
+      return res.status(400).json("User doesnt exist");
+    }
+    const customerId = user.customerId;
+    const payment = await PaymentInstance.findOne({
+      where: { userId: userId, orderId: orderId },
+    });
+    if (payment) {
+      return res.status(400).json("Already paid");
+    }
+    const order = await OrderItemsInstance.findAll({
+      where: { orderId: orderId },
+    });
+    let total: any = 0;
+    await order.forEach(async (item: any) => {
+      const book: any = await BookInstance.findByPk(item.bookId);
+      const price: any = book.price * item.quantity;
+      total = total + price;
+    });
+    const token: any = await stripe.tokens.create({ card: card });
+    await stripe.customers.createSource(customerId, {
+      source: token.id,
+    });
+    const { id, paid } = await stripe.charges.create({
+      amount: total * 100,
+      currency: "INR",
+      customer: customerId,
+    });
+    const today = new Date();
+    const date =
+      today.getFullYear() +
+      "-" +
+      (today.getMonth() + 1) +
+      "-" +
+      today.getDate();
+    await PaymentInstance.create({
+      payId: id,
+      userId: userId,
+      orderId: orderId,
+      date: date,
+      status: paid,
+      amount: total,
+    });
+    return res.status(200).json("Payment Sucess");
+  } catch (err: any) {
+    console.log(err);
+    res.status(400).json({ error: err.message });
+  }
+};
 export {
   createOrder,
   deleteOrder,
@@ -233,4 +290,5 @@ export {
   orderInCart,
   findOrderByUser,
   findOrderItemsByUser,
+  payment,
 };

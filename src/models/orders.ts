@@ -2,6 +2,7 @@ import { Sequelize, Model, DataTypes } from "sequelize";
 import db from "../database/Connection";
 import BookInstance from "./books_model";
 import OrderItemsInstance from "./order_items";
+import PaymentInstance from "./payment";
 import UserInstance from "./user";
 
 interface orders {
@@ -36,3 +37,4 @@ BookInstance.belongsToMany(OrdersInstance, {
   through: OrderItemsInstance,
   foreignKey: "bookId",
 });
+OrdersInstance.hasOne(PaymentInstance, { foreignKey: "orderId" });

@@ -4,9 +4,11 @@ import db from "../database/Connection";
 import BookInstance from "./books_model";
 import CartInstance from "./cart";
 import OrdersInstance from "./orders";
+import PaymentInstance from "./payment";
 
 interface User {
   userId?: number;
+  customerId?: string;
   username: string;
   password: string;
   email: string;
@@ -23,6 +25,7 @@ UserInstance.init(
       autoIncrement: true,
       primaryKey: true,
     },
+
     username: {
       allowNull: false,
       unique: true,
@@ -37,6 +40,9 @@ UserInstance.init(
       type: DataTypes.STRING,
       unique: true,
     },
+    customerId: {
+      type: DataTypes.STRING,
+    },
     confirmed: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -46,9 +52,6 @@ UserInstance.init(
     },
     mobile: {
       type: DataTypes.INTEGER,
-      validate: {
-        max: 10,
-      },
     },
   },
   {
@@ -69,3 +72,4 @@ BookInstance.belongsToMany(UserInstance, {
   foreignKey: "bookId",
   as: "BooksInCart",
 });
+UserInstance.hasMany(PaymentInstance, { foreignKey: "userId" });

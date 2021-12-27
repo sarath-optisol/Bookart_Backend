@@ -6,6 +6,9 @@ import {
   updateAddress,
   updateMobile,
   changePassword,
+  forgotPassword,
+  resetPassword,
+  getResetPassword,
 } from "../controller/user.controller";
 import { validateTokens } from "../middleware/validateTokens";
 import {
@@ -24,4 +27,8 @@ router.get("/user/profile", validateTokens);
 router.put("/user/address", validateTokens, updateAddress);
 router.put("/user/mobile", [validateTokens, mobileValidate], updateMobile);
 router.put("/user/password", validateTokens, changePassword);
+router.post("/user/forgot-password", forgotPassword);
+router.get("/user/reset-password/:id/:token", getResetPassword);
+router.post("/user/reset-password/:id/:token", resetPassword);
+
 export { router as userRoutes };
