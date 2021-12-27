@@ -1,3 +1,10 @@
+// config.get("PORT");
+// console.log(`++++++++++++++++${config.get("PORT")}++++++++++++++`);
+// const apiDoc = Yaml.load("../swagger.yaml");
+// dotenv.config({ path: "./environement.env" });
+// import swaggerUI from "swagger-ui-express";
+// import Yaml from "yamljs";
+// import Config from "config";
 import db from "./database/Connection";
 import express from "express";
 import { userRoutes } from "./routes/user";
@@ -8,16 +15,19 @@ import { cartRouter } from "./routes/cart";
 import { Stripe } from "stripe";
 import path from "path";
 import "ejs";
+// import dotenv from "dotenv";
+// require("dotenv").config();
+
 const cors = require("cors");
+import config from "./helper/config";
 const cookieParser = require("cookie-parser");
+
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
-const stripe = new Stripe(
-  "sk_test_51K26zMSJNnVUq47sA3hiDYhtgdSBNLiVGMDOfZYh1X4jJaHNl7K4chSQdpaiwk1UBTNxQetpJIrMYmFCgFZ3zqR4009lhW2jZ3",
-  { apiVersion: "2020-08-27" }
-);
-const server = app.listen(3001, () => {
+
+const stripe = new Stripe(config.STRIPE_KEY, { apiVersion: "2020-08-27" });
+const server = app.listen(config.PORT, () => {
   console.log("running");
 });
 db.sync().then(() => {
@@ -27,6 +37,7 @@ app.use(express.urlencoded({ extended: false }));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(cors());
+// app.use("/api-docs", swaggerUI.serve, swaggerUI.serveFiles(apiDoc));
 app.use(userRoutes);
 app.use(adminRouter);
 app.use(bookRouter);

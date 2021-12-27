@@ -1,9 +1,11 @@
 import { createAdmintokens, createtokens } from "../middleware/jwt";
 import AdminInstance from "../models/admin_model";
-import JWT from "jsonwebtoken";
 import PaymentInstance from "../models/payment";
 import sequelize from "sequelize";
-import { all } from "sequelize/types/lib/operators";
+import UserInstance from "../models/user";
+import OrdersInstance from "../models/orders";
+import OrderItemsInstance from "../models/order_items";
+import BookInstance from "../models/books_model";
 
 const adminlogin = async (req: any, res: any) => {
   const { username, password } = req.body;
@@ -12,7 +14,7 @@ const adminlogin = async (req: any, res: any) => {
       where: { username: username },
     });
     if (!admin) {
-      res.status(400).json("Wrong username");
+      res.status(400).json({ error: "Wrong username" });
       return;
     }
     const pass = (ad: any) => {
@@ -24,7 +26,7 @@ const adminlogin = async (req: any, res: any) => {
 
       res.status(200).json({ token: accessTokens });
     } else {
-      res.status(400).json({ err: "wrong pass" });
+      res.status(400).json({ error: "wrong pass" });
     }
   } catch (err) {
     console.log(err);
@@ -45,8 +47,80 @@ const getTotalRevenue = async (req: any, res: any) => {
       attributes: [[sequelize.fn("sum", sequelize.col("amount")), "total"]],
       raw: true,
     });
-    console.log(allPayment[0].total);
-  } catch (err) {}
+    return res.status(200).json(allPayment[0].total);
+  } catch (err) {
+    res.status(400).json({ error: "Cant fetch total amount" });
+  }
 };
 
-export { adminProfile, adminlogin, getTotalRevenue };
+const getUsersCount = async (req: any, res: any) => {
+  try {
+    const userCount: any = await UserInstance.findAll({
+      attributes: [
+        [sequelize.fn("count", sequelize.col("userId")), "totalcount"],
+      ],
+      raw: true,
+    });
+    return res.status(200).json({ userCount: userCount[0].totalcount });
+  } catch (err) {
+    res.status(400).json({ error: "Cannot return User count" });
+  }
+};
+
+const getMostCategorysold = async (req: any, res: any) => {
+  try {
+    const payments = await PaymentInstance.findAll({
+      where: { status: 1 },
+    });
+    const map = new Map();
+    const orderIdsInPayment: any = [];
+    payments.forEach((pay: any) => {
+      const orderId = pay.orderId;
+      orderIdsInPayment.push(orderId);
+    });
+    await orderIdsInPayment.forEach(async (ID: any) => {
+      const orderItems: any = await OrdersInstance.findAll({
+        where: { ordersId: ID },
+        include: BookInstance,
+        raw: true,
+      });
+      orderItems.forEach(async (item: any) => {
+        const category = item["books.category"];
+        const quantity = item["books.order_items.quantity"];
+        if (map.has(category)) {
+          map.set(`${category}`, map.get(category) + quantity);
+        } else {
+          map.set(`${category}`, quantity);
+        }
+      });
+    });
+
+    let final: any = [];
+    setTimeout(() => {
+      const mapSort1 = new Map([...map.entries()].sort((a, b) => b[1] - a[1]));
+      mapSort1.forEach((value, key) => {
+        final.push({
+          category: key,
+          amount: value,
+        });
+      });
+    }, 1000);
+    let final2: any = [];
+    setTimeout(() => {
+      final2 = final;
+      res.status(200).json(final2);
+    }, 1500);
+    return;
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ error: err });
+  }
+};
+
+export {
+  adminProfile,
+  adminlogin,
+  getTotalRevenue,
+  getUsersCount,
+  getMostCategorysold,
+};

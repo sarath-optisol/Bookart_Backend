@@ -1,5 +1,6 @@
 import CartInstance from "../models/cart";
 import UserInstance from "../models/user";
+import { createBook } from "../test/integration/cartTest";
 
 const addProductToCart = async (req: any, res: any) => {
   const { userId } = req.body.tokenPayload;
@@ -33,7 +34,7 @@ const updateCart = async (req: any, res: any) => {
     if (cart) {
       await cart.update({ quantity: quantity });
       await cart.save();
-      return res.status(200).json("Cart updated ");
+      return res.status(200).json("Cart updated");
     }
 
     return res.status(400).json("There is no such book in cart ");
@@ -67,13 +68,13 @@ const emptycart = async (req: any, res: any) => {
         userId: userId,
       },
     });
-    if (cart.length === 0) {
-      return res.status(400).json("cart is already empty ");
+    if (cart.length == 0) {
+      return res.status(400).json("cart is already empty");
     }
     const cartdestroy = await CartInstance.destroy({
       where: { userId: userId },
     });
-    return res.status(200).json("cart is emptyed");
+    return res.status(200).json("cart is emptied");
   } catch (err) {
     res.status(400).json(err);
   }
@@ -85,7 +86,19 @@ const getCart = async (req: any, res: any) => {
   try {
     const user: any = await UserInstance.findByPk(userId);
     const cart = await user.getBooksInCart();
-    res.status(200).json(cart);
+    let cartproducts: any = [];
+    cart.forEach((book: any) => {
+      const temp = {
+        bookId: book.bookId,
+        name: book.name,
+        description: book.description,
+        price: book.price,
+        quantity: book.cart.quantity,
+      };
+      cartproducts.push(temp);
+    });
+
+    res.status(200).json(cartproducts);
   } catch (err) {
     console.log(err);
     res.status(400).json(err);

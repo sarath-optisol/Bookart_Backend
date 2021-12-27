@@ -1,6 +1,7 @@
 import { Sequelize, DataTypes, useInflection } from "sequelize";
 import { Model } from "sequelize";
 import db from "../database/Connection";
+import config from "../helper/config";
 import BookInstance from "./books_model";
 import CartInstance from "./cart";
 import OrdersInstance from "./orders";
@@ -48,10 +49,11 @@ UserInstance.init(
       defaultValue: false,
     },
     address: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     mobile: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
     },
   },
   {

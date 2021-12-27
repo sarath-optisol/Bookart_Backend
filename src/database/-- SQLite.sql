@@ -1,0 +1,15 @@
+-- SQLite
+-- INSERT INTO admins (username,password,createdAt,updatedAt) VALUES ("sarath-admin","pass123","2021-12-07","2021-12-07");
+-- DELETE FROM books; 
+-- DELETE FROM users;
+-- INSERT INTO carts(userId,bookId,quantity,createdAt,updatedAt) VALUES (84,46,5,"2021-12-07","2021-12-07");
+-- -- INSERT INTO books(name,
+--     price,
+--     authorname,
+--     publisher,
+--     image,
+--     releasedate,
+--     language,
+--     description,
+--     quantity,
+--     category,createdAt,updatedAt) VALUES ("book2",400,"aristole","penguin","image","2021-11-07","English","This is a ddescription ",5,"Life","2021-12-07","2021-12-07");

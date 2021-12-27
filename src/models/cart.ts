@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import db from "../database/Connection";
+import config from "../helper/config";
 
 interface cart {
   userId?: number;

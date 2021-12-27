@@ -15,6 +15,7 @@ import {
   registerValdiator,
   loginValidator,
   mobileValidate,
+  passwordChangeValidate,
 } from "../middleware/validators";
 import express from "express";
 const router = express.Router();
@@ -26,7 +27,11 @@ router.get("/user/logout", validateTokens, userLogout);
 router.get("/user/profile", validateTokens);
 router.put("/user/address", validateTokens, updateAddress);
 router.put("/user/mobile", [validateTokens, mobileValidate], updateMobile);
-router.put("/user/password", validateTokens, changePassword);
+router.put(
+  "/user/password",
+  [validateTokens, passwordChangeValidate],
+  changePassword
+);
 router.post("/user/forgot-password", forgotPassword);
 router.get("/user/reset-password/:id/:token", getResetPassword);
 router.post("/user/reset-password/:id/:token", resetPassword);

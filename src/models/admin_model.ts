@@ -1,6 +1,7 @@
 import { Sequelize, DataTypes, useInflection } from "sequelize";
 import { Model } from "sequelize";
 import db from "../database/Connection";
+import config from "../helper/config";
 
 interface Admin {
   adminId?: number;

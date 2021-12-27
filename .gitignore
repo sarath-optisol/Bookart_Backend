@@ -4,3 +4,4 @@ package-lock.json
 /rough.txt
 /.nyc_output
 /coverage
+/.env

@@ -225,7 +225,7 @@ const findOrderItemsByUser = async (req: any, res: any) => {
 
     orderItems.push(temp);
   });
-  res.send(orderItems);
+  res.status(200).json(orderItems);
 };
 
 const payment = async (req: any, res: any) => {

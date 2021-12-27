@@ -1,10 +1,11 @@
 import { sign } from "jsonwebtoken";
 import { Request } from "express";
+import config from "../helper/config";
 
 const createtokens = (user: any) => {
   const acessToken = sign(
     { username: user.username, userId: user.userId },
-    "jwtsecret",
+    config.JWT_SECRET,
     { expiresIn: "3d" }
   );
   return acessToken;
@@ -13,7 +14,7 @@ const createtokens = (user: any) => {
 const createAdmintokens = (admin: any) => {
   const acessToken = sign(
     { username: admin.username, adminId: admin.adminId },
-    "jwtsecret",
+    config.JWT_SECRET,
     { expiresIn: "3d" }
   );
   return acessToken;

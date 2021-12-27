@@ -5,6 +5,7 @@ import { createtokens } from "../middleware/jwt";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import { stripe } from "../server";
+import config from "../helper/config";
 interface TokenInterface {
   user: string;
   iat: Number;
@@ -14,8 +15,8 @@ const transporter = createTransport({
   service: "FastMail",
 
   auth: {
-    user: "sarathkumar@fastmail.com",
-    pass: "7uurug4dpgyun65c",
+    user: config.NODEMAILER_USER,
+    pass: config.NODEMAILER_PASSWORD,
   },
 });
 
@@ -31,12 +32,10 @@ const registerUser = async (req: any, res: any) => {
       where: { username: username },
     });
     if (usernameCheck.length > 0) {
-      res.status(400).json({ err: "username already exist" });
-      return;
+      return res.status(400).json({ err: "username already exist" });
     }
     if (emailcheck.length > 0) {
-      res.status(400).json({ err: "Email already exist" });
-      return;
+      return res.status(400).json({ err: "Email already exist" });
     }
 
     const createUser = await bcrypt
@@ -53,14 +52,14 @@ const registerUser = async (req: any, res: any) => {
           }
         });
       });
-    const emailToken = jt.sign({ user: username }, "jwtsecret", {
+    const emailToken = jt.sign({ user: username }, config.JWT_SECRET, {
       expiresIn: "1d",
     });
-    console.log(`This is email token: ${emailToken}`);
+    // console.log(`This is email token: ${emailToken}`);
     const url = `http://localhost:3001/user/confirmation/${emailToken}`;
 
     await transporter.sendMail({
-      from: "sarathkumar@fastmail.com",
+      from: config.NODEMAILER_USER,
       to: `${email}`,
       subject: "Confirm Email",
       text: "confirm this email",
@@ -71,7 +70,7 @@ const registerUser = async (req: any, res: any) => {
       email: email,
     });
     await UserInstance.update({ customerId: id }, { where: { email: email } });
-    return res.json("USER REGISTERED");
+    return res.status(200).json("USER REGISTERED");
   } catch (err) {
     console.log(err);
     return res.json({ error: err });
@@ -92,8 +91,7 @@ const loginUser = async (req: any, res: any) => {
     };
 
     if (!userConfirmed(user)) {
-      res.status(400).json({ err: "Email is not confirmed" });
-      throw Error("Email is not confirmed");
+      return res.status(400).json({ error: "Email is not confirmed" });
     }
     const pwd = (user: any) => {
       return user.password;
@@ -101,7 +99,7 @@ const loginUser = async (req: any, res: any) => {
     const dbpass = pwd(user);
     await bcrypt.compare(password, dbpass).then((match: any) => {
       if (!match) {
-        res.status(400).json({ error: "Wrong pass" });
+        res.status(400).json({ error: "Wrong password" });
       } else {
         const accessTokens = createtokens(user);
         res.status(200).json({ token: accessTokens });
@@ -113,7 +111,7 @@ const loginUser = async (req: any, res: any) => {
 };
 const confirmEmail = async (req: any, res: any) => {
   try {
-    const decoded = jt.verify(req.params.token, "jwtsecret");
+    const decoded = jt.verify(req.params.token, config.JWT_SECRET);
 
     await UserInstance.update(
       { confirmed: true },
@@ -140,10 +138,10 @@ const updateAddress = async (req: any, res: any) => {
   try {
     const user = await UserInstance.findByPk(userId);
     if (!user) {
-      return res.status(400).json("No user found");
+      return res.status(400).json({ error: "No user found" });
     }
     if (!address) {
-      return res.status(400).json("Send address");
+      return res.status(400).json({ error: "Send address" });
     }
     const updated = await user.update({ address: address });
     return res.status(200).json(updated);
@@ -155,13 +153,14 @@ const updateAddress = async (req: any, res: any) => {
 const updateMobile = async (req: any, res: any) => {
   const userId = req.body.tokenPayload.userId;
   const mobile = req.body.mobile;
+  console.log(mobile);
   try {
     const user = await UserInstance.findByPk(userId);
     if (!user) {
-      return res.status(400).json("No user found");
+      return res.status(400).json({ error: "No user found" });
     }
     if (!mobile) {
-      return res.status(400).json("Send address");
+      return res.status(400).json({ error: "Send mobile number" });
     }
     const updated = await user.update({ mobile: mobile });
     return res.status(200).json(updated);
@@ -175,7 +174,7 @@ const changePassword = async (req: any, res: any) => {
     const { oldPassword, newPassword } = req.body;
     const user: any = await UserInstance.findByPk(userId);
     if (!user) {
-      return res.status(400).json("User doesnt exist");
+      return res.status(400).json({ error: "User doesnt exist" });
     }
     const userPass = user.password;
     await bcrypt.compare(oldPassword, userPass).then((match: any) => {
@@ -187,7 +186,7 @@ const changePassword = async (req: any, res: any) => {
     await user.update({ password: change });
     res.status(200).json("password updated");
   } catch (err: any) {
-    res.status(400).json(err.message);
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -196,16 +195,16 @@ const forgotPassword = async (req: any, res: any) => {
   try {
     const user: any = await UserInstance.findOne({ where: { email: email } });
     if (!user) {
-      return res.status(400).json("Email id doesnt exist ");
+      return res.status(400).json({ error: "Email id doesnt exist" });
     }
     const userId = user.userId;
     const secret = "jwtsecret" + user.password;
     const emailToken = jt.sign({ userId: userId, email: user.email }, secret, {
       expiresIn: "15m",
     });
-    const link = `http://localhost:3001/user/reset-password/${userId}/${emailToken}`;
+    const link = `http://localhost:3000/reset-password/${userId}/${emailToken}`;
     await transporter.sendMail({
-      from: "sarathkumar@fastmail.com",
+      from: config.NODEMAILER_USER,
       to: `${email}`,
       subject: "Reset Password",
       html: `This is a one time link to change the password: <br></br>
@@ -223,25 +222,23 @@ const getResetPassword = async (req: any, res: any) => {
     if (!user) {
       return res.status(400).json("Email id doesnt exist ");
     }
-    const secret = "jwtsecret" + user.password;
+    const secret = config.JWT_SECRET + user.password;
     const verified = jt.verify(token, secret);
-    res.render("reset-password");
   } catch (err) {
     console.log(err);
-    res.status(400).json("Invalid address");
+    res.status(400).json({ error: "Invalid address" });
   }
 };
 const resetPassword = async (req: any, res: any) => {
   const { id, token } = req.params;
   const { password, confirmpass } = req.body;
-  console.log(password);
-  console.log(confirmpass);
+
   try {
     const user: any = await UserInstance.findByPk(id);
     if (!user) {
-      return res.status(400).json("Email id doesnt exist ");
+      return res.status(400).json({ error: "Email id doesnt exist " });
     }
-    const secret = "jwtsecret" + user.password;
+    const secret = config.JWT_SECRET + user.password;
     const verified = await jt.verify(token, secret);
     await bcrypt.hash(password, 10).then(async (hash: any) => {
       await user.update({ password: hash });

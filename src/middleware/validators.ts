@@ -52,9 +52,37 @@ const mobileValidate = async (req: any, res: any, next: any) => {
   }
   return next();
 };
+const passwordChangeValidate = async (req: any, res: any, next: any) => {
+  await check("oldPassword", "old Password Required").notEmpty().run(req),
+    await check("newPassword", "new Password Required").notEmpty().run(req);
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    return res.status(400).json({ errors: result.array() });
+  } else return next();
+};
+
+const cartvalidation = async (req: any, res: any, next: any) => {
+  await check("bookId", "book id required").notEmpty().run(req);
+  await check("quantity", "quantity required").notEmpty().run(req);
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    return res.status(400).json({ errors: result.array() });
+  } else return next();
+};
+
+const idValidation = async (req: any, res: any, next: any) => {
+  await check("id", "id required").notEmpty().run(req.params);
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    return res.status(400).json({ errors: result.array() });
+  } else return next();
+};
 export {
   bookCreatevalidator,
   loginValidator,
   registerValdiator,
   mobileValidate,
+  passwordChangeValidate,
+  cartvalidation,
+  idValidation,
 };

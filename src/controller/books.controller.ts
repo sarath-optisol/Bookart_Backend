@@ -39,8 +39,8 @@ const createBook = async (req: any, res: any) => {
       description: description,
       quantity: quantity,
       category: category,
-    }).then(() => {
-      res.status(200).json("book created");
+    }).then((book) => {
+      res.status(200).json(book);
     });
   } catch (err) {
     console.log(err);
@@ -77,7 +77,8 @@ const searchBookById = async (req: any, res: any) => {
   try {
     const { id } = req.params;
     const getbook = await BookInstance.findByPk(id);
-    res.status(200).json(getbook);
+    if (getbook) res.status(200).json(getbook);
+    else res.status(400).json("No books found");
   } catch (err) {
     res.status(400).json(err);
   }
@@ -127,7 +128,7 @@ const getBookByAuthor = async (req: any, res: any) => {
       res.status(200).json(booksbyauthor);
       return;
     } else {
-      res.status(200).json("author not found");
+      res.status(400).json("author not found");
 
       return;
     }

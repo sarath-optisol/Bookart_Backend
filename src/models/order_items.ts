@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes, Model } from "sequelize";
 import db from "../database/Connection";
+import config from "../helper/config";
 
 interface orderItems {
   orderitemsId?: number;
