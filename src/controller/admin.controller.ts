@@ -10,7 +10,7 @@ import BookInstance from "../models/books_model";
 const adminlogin = async (req: any, res: any) => {
   const { username, password } = req.body;
   try {
-    const admin = await AdminInstance.findOne({
+    const admin: any = await AdminInstance.findOne({
       where: { username: username },
     });
     if (!admin) {
@@ -23,8 +23,7 @@ const adminlogin = async (req: any, res: any) => {
     const dbpass = pass(admin);
     if (dbpass === password) {
       const accessTokens = createAdmintokens(admin);
-
-      res.status(200).json({ token: accessTokens });
+      res.status(200).json({ token: accessTokens, isAdmin: admin.isAdmin });
     } else {
       res.status(400).json({ error: "wrong pass" });
     }

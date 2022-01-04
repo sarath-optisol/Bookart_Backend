@@ -46,6 +46,7 @@ const registerUser = async (req: any, res: any) => {
           password: hash,
           email: email,
           confirmed: false,
+          isAdmin: false,
         }).catch((err) => {
           if (err) {
             console.log(err);
@@ -79,7 +80,9 @@ const registerUser = async (req: any, res: any) => {
 
 const loginUser = async (req: any, res: any) => {
   const { username, password } = req.body;
-  const user = await UserInstance.findOne({ where: { username: username } });
+  const user: any = await UserInstance.findOne({
+    where: { username: username },
+  });
   try {
     if (!user) {
       return res.status(400).json({ error: "user dosent exist" });
@@ -96,13 +99,14 @@ const loginUser = async (req: any, res: any) => {
     const pwd = (user: any) => {
       return user.password;
     };
+
     const dbpass = pwd(user);
     await bcrypt.compare(password, dbpass).then((match: any) => {
       if (!match) {
         res.status(400).json({ error: "Wrong password" });
       } else {
         const accessTokens = createtokens(user);
-        res.status(200).json({ token: accessTokens });
+        res.status(200).json({ token: accessTokens, isAdmin: user.isAdmin });
       }
     });
   } catch (err) {

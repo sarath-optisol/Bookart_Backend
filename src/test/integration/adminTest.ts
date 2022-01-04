@@ -11,7 +11,11 @@ import { response } from "express";
 chai.use(chaiHttp);
 chai.should();
 const admin = async () => {
-  await AdminInstance.create({ username: "admin", password: "pass123" });
+  await AdminInstance.create({
+    username: "admin",
+    password: "pass123",
+    isAdmin: true,
+  });
 };
 let token: string;
 const deleteAdmin = async () => {

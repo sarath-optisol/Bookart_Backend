@@ -25,7 +25,7 @@ const createBook = async (req: any, res: any) => {
       where: { name: name },
     });
     if (booknameCheck.length > 0) {
-      res.status(400).json({ err: "bookname already exist" });
+      res.status(400).json({ error: "bookname already exist" });
       return;
     }
     BookInstance.create({
@@ -53,7 +53,7 @@ const updateBook = async (req: any, res: any) => {
   try {
     const book = await BookInstance.findByPk(bookid);
     if (!book) {
-      res.status(400).json("No books found");
+      res.status(400).json({ error: "No books found" });
       return;
     } else {
       const updated = await book.update(req.body);
@@ -128,7 +128,7 @@ const getBookByAuthor = async (req: any, res: any) => {
       res.status(200).json(booksbyauthor);
       return;
     } else {
-      res.status(400).json("author not found");
+      res.status(400).json({ error: "author not found" });
 
       return;
     }

@@ -16,6 +16,7 @@ interface User {
   confirmed: Boolean;
   address?: string;
   mobile?: number;
+  isAdmin: boolean;
 }
 export default class UserInstance extends Model<User> {}
 
@@ -54,6 +55,10 @@ UserInstance.init(
     },
     mobile: {
       type: DataTypes.BIGINT,
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   },
   {

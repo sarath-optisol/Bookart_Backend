@@ -7,6 +7,7 @@ interface Admin {
   adminId?: number;
   username: string;
   password: string;
+  isAdmin: boolean;
 }
 export default class AdminInstance extends Model<Admin> {}
 
@@ -25,6 +26,10 @@ AdminInstance.init(
     password: {
       allowNull: false,
       type: DataTypes.STRING,
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
   },
   {
